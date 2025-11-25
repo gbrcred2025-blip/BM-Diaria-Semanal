@@ -59,7 +59,13 @@ function aplicarFiltros() {
 
     return bmRegistros.filter(r => {
         let ok = true;
-        if (fDate) ok = ok && r.data === fDate;
+
+        // Date filter - normalize both to YYYY-MM-DD format
+        if (fDate) {
+            const recordDate = r.data?.substring(0, 10) || r.data;
+            ok = ok && recordDate === fDate;
+        }
+
         if (fEmpresa) ok = ok && r.empresa === fEmpresa;
         if (fStatus) ok = ok && r.status === fStatus;
 
