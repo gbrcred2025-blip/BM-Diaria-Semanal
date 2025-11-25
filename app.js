@@ -382,11 +382,12 @@ function salvarRegistro() {
 }
 
 function limparTodosDados() {
-    if (!confirm("Tem certeza que deseja apagar TODOS os registros deste painel neste navegador?")) return;
-    bmRegistros = [];
-    salvarDados();
-    currentPage = 1;
-    renderTabela();
+    document.getElementById("inputDate").value = new Date().toISOString().slice(0, 10);
+    document.getElementById("inputEmpresa").value = "";
+    document.getElementById("inputFacebook").value = "";
+    document.getElementById("inputPortfolio").value = "";
+    document.getElementById("inputStatus").value = "aprovado";
+    document.getElementById("inputObs").value = "";
 }
 
 function carregarDadosDaApi() {
