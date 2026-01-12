@@ -1,155 +1,1563 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>Painel Local de BM's</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Painel BM — GBR / 3P</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="color-scheme" content="light dark">
+  <style>
+  :root{
+    --bg0:#070B14;
+    --bg1:#0B1220;
+    --surface: rgba(17, 24, 39, .62);
+    --surface2: rgba(15, 23, 42, .72);
+    --border: rgba(148,163,184,.16);
+    --border2: rgba(148,163,184,.10);
+    --text:#E5E7EB;
+    --muted:#94A3B8;
+    --muted2:#A7B0C0;
+    --brand:#3B82F6;
+    --brand2:#60A5FA;
+    --ok:#22C55E;
+    --warn:#F59E0B;
+    --bad:#EF4444;
+    --shadow: 0 18px 55px rgba(0,0,0,.35);
+    --shadow2: 0 10px 28px rgba(0,0,0,.22);
+    --r12:12px;
+    --r16:16px;
+    --r20:20px;
+    --ring: 0 0 0 3px rgba(59,130,246,.25);
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    color:var(--text);
+    background:
+      radial-gradient(1100px 700px at 15% 10%, rgba(59,130,246,.18) 0%, rgba(59,130,246,0) 55%),
+      radial-gradient(1100px 700px at 85% 15%, rgba(34,197,94,.10) 0%, rgba(34,197,94,0) 55%),
+      radial-gradient(1000px 650px at 50% 100%, rgba(245,158,11,.10) 0%, rgba(245,158,11,0) 60%),
+      linear-gradient(180deg, var(--bg0), var(--bg1));
+  }
+
+  a{ color:inherit; text-decoration:none; }
+
+  .hidden{ display:none !important; }
+  .sr-only{
+    position:absolute !important;
+    width:1px; height:1px;
+    padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0);
+    white-space:nowrap; border:0;
+  }
+
+  .container{
+    width:min(1280px, calc(100% - 40px));
+    margin:22px auto 56px;
+  }
+
+  /* Topbar */
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:50;
+    border-bottom: 1px solid var(--border2);
+    background: rgba(7,11,20,.62);
+    backdrop-filter: blur(14px);
+  }
+  .topbar-inner{
+    width:min(1280px, calc(100% - 40px));
+    margin:0 auto;
+    padding:14px 0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; min-width: 280px; }
+  .logo{
+    width:44px; height:44px; border-radius:14px;
+    display:grid; place-items:center;
+    color:#EAF2FF;
+    background: linear-gradient(135deg, rgba(59,130,246,.95), rgba(96,165,250,.55));
+    box-shadow: 0 10px 28px rgba(59,130,246,.20);
+    border: 1px solid rgba(255,255,255,.18);
+  }
+  .logo svg{ width:24px; height:24px; }
+  h1{ margin:0; font-size:15px; font-weight:700; letter-spacing:.2px; }
+  .sub{ display:block; font-size:12px; color:var(--muted); font-weight:500; margin-top:2px; }
+
+  .right{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+
+  .pill{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px;
+    border-radius:999px;
+    background: rgba(15,23,42,.62);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow2);
+    font-size:12px;
+    color: var(--muted2);
+  }
+  .pill .dot{
+    width:10px; height:10px; border-radius:50%;
+    background: rgba(148,163,184,.55);
+    box-shadow: 0 0 0 3px rgba(148,163,184,.12);
+  }
+  .pill .dot.good{ background: var(--ok); box-shadow: 0 0 0 3px rgba(34,197,94,.15); }
+  .pill .dot.warn{ background: var(--warn); box-shadow: 0 0 0 3px rgba(245,158,11,.15); }
+  .pill .dot.bad{ background: var(--bad); box-shadow: 0 0 0 3px rgba(239,68,68,.15); }
+
+  /* Buttons */
+  .btn{
+    appearance:none;
+    border: 1px solid var(--border);
+    background: rgba(15,23,42,.55);
+    color: var(--text);
+    padding:10px 12px;
+    border-radius: 12px;
+    cursor:pointer;
+    font-weight:650;
+    font-size:13px;
+    transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    box-shadow: var(--shadow2);
+  }
+  .btn:hover{ transform: translateY(-1px); border-color: rgba(148,163,184,.25); background: rgba(15,23,42,.70); }
+  .btn:active{ transform: translateY(0px) scale(.99); }
+  .btn:focus{ outline:none; box-shadow: var(--shadow2), var(--ring); }
+
+  .btn.primary{
+    border-color: rgba(59,130,246,.38);
+    background: linear-gradient(135deg, rgba(59,130,246,.92), rgba(96,165,250,.55));
+    color:#0B1220;
+  }
+  .btn.primary:hover{ background: linear-gradient(135deg, rgba(59,130,246,.98), rgba(96,165,250,.62)); }
+
+  .btn.danger{
+    border-color: rgba(239,68,68,.35);
+    background: rgba(239,68,68,.10);
+    color: #FCA5A5;
+  }
+  .btn.danger:hover{ background: rgba(239,68,68,.16); }
+
+  .btn.ghost{
+    background: transparent;
+    box-shadow:none;
+  }
+
+  /* Layout grid */
+  .grid{
+    display:grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap:18px;
+    align-items:start;
+  }
+  @media (max-width: 980px){
+    .grid{ grid-template-columns: 1fr; }
+    .right{ justify-content:flex-start; }
+  }
+
+  /* Card */
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r20);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+    backdrop-filter: blur(14px);
+  }
+  .card-header{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    padding:16px 18px;
+    border-bottom: 1px solid var(--border2);
+    background: linear-gradient(180deg, rgba(15,23,42,.55), rgba(15,23,42,.22));
+   flex-wrap:wrap; gap:12px; }
+  .card-title{ font-size:13px; font-weight:800; letter-spacing:.35px; text-transform:uppercase; color: rgba(229,231,235,.95); }
+  .card-sub{ font-size:12px; color: var(--muted); margin-top:4px; line-height:1.35; }
+  .card-body{ padding:16px 18px 18px; }
+
+  .actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+
+  /* Metrics */
+  .summary{
+    display:grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap:12px;
+  }
+  @media (max-width: 980px){ .summary{ grid-template-columns: repeat(2, 1fr);} }
+  .metric{
+    padding:14px 14px;
+    border-radius: 16px;
+    border: 1px solid var(--border2);
+    background: rgba(2,6,23,.28);
+  }
+  .metric .k{ font-size:12px; color: var(--muted); font-weight:650; }
+  .metric .v{ margin-top:8px; font-size:26px; font-weight:850; letter-spacing:.2px; }
+
+  /* Filters */
+  label{ display:block; font-size:12px; color: var(--muted); margin:0 0 6px; font-weight:650; }
+  input, select, textarea{
+    width:100%;
+    border-radius: 12px;
+    padding:10px 12px;
+    border: 1px solid var(--border);
+    background: rgba(2,6,23,.25);
+    color: var(--text);
+    font-size:13px;
+    outline:none;
+    transition: box-shadow .12s ease, border-color .12s ease, background .12s ease;
+  }
+  input::placeholder, textarea::placeholder{ color: rgba(148,163,184,.70); }
+  input:focus, select:focus, textarea:focus{ box-shadow: var(--ring); border-color: rgba(59,130,246,.40); background: rgba(2,6,23,.32); }
+  select option{ background:#0B1220; color: var(--text); }
+
+  .filters{
+    display:grid;
+    grid-template-columns: 190px 190px 190px 1fr;
+    gap:12px;
+    align-items:end;
+  }
+  @media (max-width: 980px){
+    .filters{ grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px){
+    .filters{ grid-template-columns: 1fr; }
+  }
+
+
+  /* Filter layouts (responsive) */
+  .filters.layout-4{ grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); align-items:start; }
+  .filters.layout-2wide{ grid-template-columns: 240px 1fr; align-items:start; }
+  .filters.layout-2{ grid-template-columns: 1fr 1fr; align-items:start; }
+  .filters.layout-2small{ grid-template-columns: 180px 180px; align-items:start; }
+  .filters.layout-2label{ grid-template-columns: 220px 1fr; align-items:start; }
+
+  @media (max-width: 980px){
+    .filters.layout-4{ grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); align-items:start; }
+    .filters.layout-2wide, .filters.layout-2label{ grid-template-columns: 1fr; }
+    .filters.layout-2small{ grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px){
+    .filters.layout-4, .filters.layout-2wide, .filters.layout-2, .filters.layout-2small, .filters.layout-2label{ grid-template-columns: 1fr; }
+  }
+
+  /* Table */
+  .table-wrap{
+    overflow:auto;
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    background: rgba(2,6,23,.18);
+  }
+  table{ width:100%; border-collapse:separate; border-spacing:0; }
+  thead th{
+    position:sticky; top:0;
+    text-align:left;
+    font-size:11px;
+    color: rgba(148,163,184,.95);
+    background: rgba(7,11,20,.92);
+    border-bottom: 1px solid var(--border2);
+    padding:12px 12px;
+    text-transform:uppercase;
+    letter-spacing:.35px;
+    z-index:1;
+  }
+  tbody td{
+    padding:12px 12px;
+    border-bottom: 1px solid rgba(148,163,184,.08);
+    font-size:13px;
+    vertical-align:top;
+  }
+  tbody tr:hover td{ background: rgba(59,130,246,.06); }
+  tbody tr:last-child td{ border-bottom:none; }
+
+  .pagination{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px;
+    margin-top:10px;
+  }
+  .pageinfo{
+    font-size:12px;
+    color: var(--muted);
+  }
+
+  /* Badges */
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 10px;
+    border-radius: 999px;
+    font-size:12px;
+    font-weight:750;
+    border: 1px solid var(--border2);
+    background: rgba(2,6,23,.22);
+    white-space:nowrap;
+  }
+  .b-good{ color: rgba(34,197,94,.95); border-color: rgba(34,197,94,.22); background: rgba(34,197,94,.10); }
+  .b-warn{ color: rgba(245,158,11,.95); border-color: rgba(245,158,11,.22); background: rgba(245,158,11,.10); }
+  .b-bad{  color: rgba(239,68,68,.95); border-color: rgba(239,68,68,.22); background: rgba(239,68,68,.10); }
+  .b-neutral{ color: rgba(226,232,240,.95); }
+
+  .iconbtn{
+    border: 1px solid var(--border2);
+    background: rgba(2,6,23,.18);
+    color: var(--text);
+    padding:8px 10px;
+    border-radius: 12px;
+    cursor:pointer;
+    font-weight:750;
+    font-size:12px;
+    transition: transform .12s ease, background .12s ease, border-color .12s ease;
+  }
+  .iconbtn:hover{ transform: translateY(-1px); border-color: rgba(148,163,184,.22); background: rgba(2,6,23,.28); }
+  .iconbtn:focus{ outline:none; box-shadow: var(--ring); }
+
+  .hint{ color: rgba(148,163,184,.85); }
+
+  /* Overlays / Modals */
+  .overlay{
+    position:fixed; inset:0;
+    display:none;
+    place-items:center;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(6px);
+    z-index:100;
+    padding: 18px;
+  }
+  .overlay.active{ display:grid; }
+  .modal{
+    width: min(640px, 100%);
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: rgba(15,23,42,.92);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .modal-header{
+    padding:16px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    border-bottom: 1px solid var(--border2);
+  }
+  .modal-title{ font-weight:850; letter-spacing:.2px; }
+  .modal-body{ padding: 16px 18px; }
+  .modal-footer{
+    padding: 16px 18px;
+    display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap;
+    border-top: 1px solid var(--border2);
+    background: rgba(2,6,23,.18);
+  }
+
+
+  /* Login (fundo branco + visual mais profissional) */
+  #loginOverlay{
+    background: #ffffff;
+    backdrop-filter: none;
+  }
+  #loginOverlay .modal{
+    background: #ffffff;
+    border-color: #E2E8F0;
+    color: #0F172A;
+    box-shadow: 0 30px 90px rgba(15, 23, 42, .18);
+  }
+  #loginOverlay .modal-header{ border-bottom: 1px solid #E2E8F0; }
+  #loginOverlay .modal-title{ font-size:16px; font-weight:900; color:#0F172A; letter-spacing:.2px; }
+  #loginOverlay label{ color:#334155; }
+  #loginOverlay .hint{ color:#475569; }
+  #loginOverlay input, #loginOverlay select, #loginOverlay textarea{
+    background: #F8FAFC;
+    border-color: #E2E8F0;
+    color: #0F172A;
+  }
+  #loginOverlay input:focus, #loginOverlay select:focus, #loginOverlay textarea:focus{
+    background: #ffffff;
+    border-color: rgba(37,99,235,.55);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.18);
+  }
+  #loginOverlay input::placeholder{ color: rgba(71,85,105,.70); }
+  #loginOverlay select option{ background:#ffffff; color:#0F172A; }
+  #loginOverlay .modal-footer{ background: #F8FAFC; border-top: 1px solid #E2E8F0; }
+  #loginOverlay .btn{ background:#ffffff; border-color:#E2E8F0; color:#0F172A; box-shadow:none; }
+  #loginOverlay .btn:hover{ background:#F1F5F9; border-color:#CBD5E1; }
+  #loginOverlay .btn.primary{ background:#2563EB; border-color:#1D4ED8; color:#ffffff; box-shadow: 0 10px 20px rgba(37,99,235,.18); }
+  #loginOverlay .btn.primary:hover{ background:#1D4ED8; }
+  #loginOverlay .btn.ghost{ background: transparent; border-color: transparent; color:#0F172A; }
+  #loginOverlay .login-head{ display:flex; align-items:center; gap:14px; margin-bottom: 14px; }
+  #loginOverlay .login-mark{
+    width:46px; height:46px; border-radius: 16px;
+    display:grid; place-items:center;
+    background: #EFF6FF;
+    border: 1px solid #DBEAFE;
+    color:#1D4ED8;
+  }
+  #loginOverlay .login-mark svg{ width:22px; height:22px; }
+  #loginOverlay .login-title{ font-size:18px; font-weight:900; margin:0; color:#0F172A; }
+  #loginOverlay .login-sub{ margin-top:4px; font-size:12.5px; color:#475569; font-weight:650; }
+  #loginOverlay .role-tabs{
+    display:flex; gap:8px; padding:6px; border-radius: 14px;
+    background:#F1F5F9; border:1px solid #E2E8F0;
+  }
+  #loginOverlay .tab{
+    flex:1;
+    border: 1px solid transparent;
+    background: transparent;
+    padding:10px 10px;
+    border-radius: 12px;
+    font-weight:850;
+    font-size:13px;
+    color:#0F172A;
+    cursor:pointer;
+    transition: background .12s ease, transform .12s ease, border-color .12s ease;
+  }
+  #loginOverlay .tab:hover{ background:#E2E8F0; }
+  #loginOverlay .tab.active{
+    background:#ffffff;
+    border-color:#CBD5E1;
+    box-shadow: 0 8px 18px rgba(15,23,42,.08);
+  }
+  #loginOverlay .trust{
+    margin-top: 12px;
+    padding: 12px 12px;
+    border-radius: 14px;
+    border: 1px solid #E2E8F0;
+    background: #ffffff;
+  }
+  #loginOverlay .trust h3{
+    margin:0 0 8px;
+    font-size:12px;
+    letter-spacing:.35px;
+    text-transform:uppercase;
+    color:#334155;
+  }
+  #loginOverlay .trust ul{ margin:0; padding-left: 18px; color:#475569; font-size:12.5px; line-height:1.45; font-weight:650; }
+
+  .row{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+  @media (max-width: 720px){ .row{ grid-template-columns: 1fr; } }
+  .field{ margin-bottom:12px; }
+  textarea{ min-height: 96px; resize: vertical; }
+
+  /* Footer */
+  .footer{
+    margin-top: 16px;
+    color: rgba(148,163,184,.80);
+    font-size:12px;
+    text-align:center;
+  }
+
+  /* Light mode */
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg0:#F7FAFF;
+      --bg1:#EEF5FF;
+      --surface: rgba(255,255,255,.78);
+      --surface2: rgba(255,255,255,.92);
+      --border: rgba(15,23,42,.10);
+      --border2: rgba(15,23,42,.08);
+      --text:#0B1220;
+      --muted:#475569;
+      --muted2:#334155;
+      --shadow: 0 18px 55px rgba(15,23,42,.12);
+      --shadow2: 0 10px 28px rgba(15,23,42,.10);
+      --ring: 0 0 0 3px rgba(59,130,246,.22);
+    }
+    body{
+      background:
+        radial-gradient(1100px 700px at 10% 0%, rgba(59,130,246,.14) 0%, rgba(59,130,246,0) 55%),
+        radial-gradient(1100px 700px at 85% 10%, rgba(34,197,94,.08) 0%, rgba(34,197,94,0) 55%),
+        radial-gradient(1000px 650px at 50% 100%, rgba(245,158,11,.08) 0%, rgba(245,158,11,0) 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+    }
+    .topbar{ background: rgba(255,255,255,.78); }
+    select option{ background:#fff; color:#0B1220; }
+    .table-wrap{ background: rgba(255,255,255,.55); }
+    thead th{ background: rgba(248,250,252,.95); }
+  }
+</style>
 </head>
-
 <body>
-    <div class="modal-overlay" id="confirmModal">
-        <div class="modal-content">
-            <div class="modal-title">Tem certeza que deseja excluir este registro?</div>
-            <div class="modal-message">Esta ação não pode ser desfeita.</div>
-            <div style="margin-bottom: 15px;">
-                <input type="password" id="modalPassword" placeholder="Senha de administrador"
-                    style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.9rem;">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" id="modalCancelar">Cancelar</button>
-                <button class="btn btn-danger" id="modalConfirmar" disabled>Excluir</button>
-            </div>
-        </div>
-    </div>
-    <div class="modal-overlay" id="editModal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-title">Editar Registro</div>
-            <div style="display: flex; flex-direction: column; gap: 12px; margin: 20px 0;">
-                <div><label style="display: block; margin-bottom: 4px; font-size: 0.85rem; font-weight: 500;">Data de
-                        criação</label><input type="date" id="editDate"
-                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"></div>
-                <div><label
-                        style="display: block; margin-bottom: 4px; font-size: 0.85rem; font-weight: 500;">Empresa</label><select
-                        id="editEmpresa"
-                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"></select>
-                </div>
-                <div><label style="display: block; margin-bottom: 4px; font-size: 0.85rem; font-weight: 500;">Facebook /
-                        Nome</label><input type="text" id="editFacebook"
-                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"></div>
-                <div><label style="display: block; margin-bottom: 4px; font-size: 0.85rem; font-weight: 500;">BM /
-                        Portfólio</label><input type="text" id="editPortfolio"
-                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"></div>
-                <div><label
-                        style="display: block; margin-bottom: 4px; font-size: 0.85rem; font-weight: 500;">Status</label><select
-                        id="editStatus"
-                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
-                        <option value="aprovado">Aprovado</option>
-                        <option value="analise">Em análise</option>
-                        <option value="banido">Banido</option>
-                        <option value="congelado">Site congelado</option>
-                    </select></div>
-                <div><label
-                        style="display: block; margin-bottom: 4px; font-size: 0.85rem; font-weight: 500;">Observações</label><textarea
-                        id="editObs" rows="3"
-                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; resize: vertical;"></textarea>
-                </div>
-                <div><label
-                        style="display: block; margin-bottom: 4px; font-size: 0.85rem; font-weight: 500; color: #dc2626;">Senha
-                        de administrador *</label><input type="password" id="editPassword"
-                        placeholder="Digite a senha para confirmar alteração"
-                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;"></div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" id="editCancelar">Cancelar</button>
-                <button class="btn btn-primary" id="editConfirmar" disabled>Salvar Alterações</button>
-            </div>
-        </div>
-    </div>
-    <div class="page">
-        <header>
-            <h1>Painel Local de BM's</h1>
-            <p>Controle diário das BM's por empresa, com atualização rápida e local.</p>
-        </header>
-        <div class="layout-grid">
-            <div class="card">
-                <div class="filters">
-                    <div class="filters-group">
-                        <label>Dia (criação)<input type="date" id="filterDate"></label>
-                        <label>Empresa<select id="filterEmpresa">
-                                <option value="">Todas</option>
-                            </select></label>
-                        <label>Status<select id="filterStatus">
-                                <option value="">Todos</option>
-                                <option value="aprovado">Aprovado</option>
-                                <option value="analise">Em análise</option>
-                                <option value="banido">Banido</option>
-                                <option value="congelado">Site congelado</option>
-                            </select></label>
-                    </div>
-                    <button class="btn btn-secondary" id="btnClearFilters">Limpar filtros</button>
-                </div>
-                <div class="summary-cards" id="summaryCards"></div>
-                <div
-                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 15px;">
-                    <input type="text" id="searchInput" placeholder="Buscar por empresa, nome ou observação..."
-                        style="flex: 1; max-width: 350px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.85rem; background: #f9fafb;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <button class="pagination-btn" id="prevPage" disabled>&lt;</button>
-                        <span class="pagination-info" id="pageInfo">Página 1 de 1</span>
-                        <button class="pagination-btn" id="nextPage" disabled>&gt;</button>
-                    </div>
-                </div>
-                <div style="overflow-x:auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Empresa</th>
-                                <th>Facebook / BM</th>
-                                <th>Status</th>
-                                <th>Obs.</th>
-                                <th>Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="card">
-                <div class="form-section-title">Atualização diária</div>
-                <div class="small-help">Preencha os campos abaixo para registrar ou atualizar uma BM.<br>O sistema
-                    identifica a BM pela combinação <strong>Empresa + Facebook/BM</strong>. Se já existir, o status é
-                    atualizado.</div>
-                <div class="form-grid">
-                    <div class="form-field"><label for="inputDate">Data de criação</label><input type="date"
-                            id="inputDate"></div>
-                    <div class="form-field"><label for="inputEmpresa">Empresa</label><select id="inputEmpresa"></select>
-                    </div>
-                    <div class="form-field"><label for="inputFacebook">Facebook / Nome</label><input type="text"
-                            id="inputFacebook" placeholder="Ex: Jessica, Gabriel, Maria..."></div>
-                    <div class="form-field"><label for="inputPortfolio">BM / Portfólio</label><input type="text"
-                            id="inputPortfolio" placeholder="Ex: KM, CAMP, VIEIRA 2..."></div>
-                    <div class="form-field"><label for="inputStatus">Status</label><select id="inputStatus">
-                            <option value="aprovado">Aprovado</option>
-                            <option value="analise">Em análise</option>
-                            <option value="banido">Banido</option>
-                            <option value="congelado">Site congelado</option>
-                        </select></div>
-                    <div class="form-field"><label for="inputObs">Observações</label><textarea id="inputObs"
-                            placeholder="Opcional. Ex: banido após uso, domínio .shop, site congelado, etc."></textarea>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button class="btn btn-primary" id="btnSalvar">Salvar</button>
-                    <button class="btn btn-danger" id="btnLimparTudo">Limpar</button>
-                </div>
 
-            </div>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 16.5V7.5C4 6.1 5.1 5 6.5 5h11C19 5 20 6 20 7.5v9c0 1.5-1 2.5-2.5 2.5h-11C5.1 19 4 17.9 4 16.5Z" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M7 9h10M7 12h10M7 15h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
         </div>
+        <div>
+          <h1>Painel BM (GBR / 3P)
+            <span class="sub">Gestão diária • filtros • edição • sincronização</span>
+          </h1>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="pill" id="syncPill" title="Status de sincronização">
+          <span class="dot" id="syncDot"></span>
+          <span id="syncText">Sincronização: aguardando…</span>
+        </div>
+        
+        <div class="pill" id="rolePill" title="Perfil de acesso">
+          <span class="dot" id="roleDot"></span>
+          <span id="roleText">Acesso: —</span>
+        </div>
+<button class="btn ghost" id="btnExport">Exportar CSV</button>
+        <button class="btn" id="btnRecarregar">Recarregar</button>
+        <button class="btn primary" id="btnTrocarAcesso">Trocar acesso</button>
+      </div>
     </div>
-    <script type="module" src="app.js"></script>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Resumo</div>
+            <div class="card-sub" id="lastSync">Última atualização: —</div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="btnClearFilters">Limpar filtros</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="summary" id="summary">
+            <div class="metric"><div class="k">Total</div><div class="v" id="mTotal">0</div></div>
+            <div class="metric"><div class="k">Aprovado</div><div class="v" id="mAprovado">0</div></div>
+            <div class="metric"><div class="k">Em análise</div><div class="v" id="mAnalise">0</div></div>
+            <div class="metric"><div class="k">Banido/Congelado</div><div class="v" id="mRisco">0</div></div>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <div class="filters">
+            <div>
+              <label for="filterDate">Data</label>
+              <input type="date" id="filterDate" />
+            </div>
+            <div>
+              <label for="filterEmpresa">Empresa</label>
+              <select id="filterEmpresa"></select>
+            </div>
+            <div>
+              <label for="filterStatus">Status</label>
+              <select id="filterStatus">
+                <option value="">Todos</option>
+                <option value="aprovado">Aprovado</option>
+                <option value="analise">Em análise</option>
+                <option value="banido">Banido</option>
+                <option value="congelado">Site congelado</option>
+              </select>
+            </div>
+            <div>
+              <label for="searchInput">Busca</label>
+              <input type="text" id="searchInput" placeholder="Buscar por Facebook/Nome, Portfólio ou Observações…" />
+            </div>
+            <div class="actions">
+              <button class="btn" id="prevPage">◀</button>
+              <button class="btn" id="nextPage">▶</button>
+            </div>
+          </div>
+
+          <div class="pagination">
+            <div class="pageinfo" id="pageInfo">Página 1</div>
+            <div class="pageinfo" id="countInfo">0 registros</div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="min-width:120px">Data</th>
+                  <th style="min-width:90px">Empresa</th>
+                  <th style="min-width:220px">Facebook / Nome</th>
+                  <th style="min-width:220px">BM / Portfólio</th>
+                  <th style="min-width:160px">Status</th>
+                  <th style="min-width:320px">Observações</th>
+                  <th style="min-width:170px" id="thAcoes">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="adminCard">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Atualização diária (Admin)</div>
+            <div class="card-sub">Cria ou atualiza um registro pela combinação <b>Empresa + Facebook/Nome + Portfólio</b>.</div>
+          </div>
+          <div class="actions">
+            <button class="btn danger" id="btnLimparForm">Limpar</button>
+            <button class="btn primary" id="btnSalvar">Salvar</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="filters layout-4">
+            <div>
+              <label for="inputDate">Data de criação</label>
+              <input type="date" id="inputDate" />
+            </div>
+            <div>
+              <label for="inputEmpresa">Empresa</label>
+              <select id="inputEmpresa"></select>
+            </div>
+            <div>
+              <label for="inputFacebook">Facebook / Nome</label>
+              <input type="text" id="inputFacebook" placeholder="Ex: Jessica, Gabriel, Maria…" />
+            </div>
+            <div>
+              <label for="inputPortfolio">BM / Portfólio</label>
+              <input type="text" id="inputPortfolio" placeholder="Ex: KM, CAMP, GBR 02…" />
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="filters layout-2wide">
+            <div>
+              <label for="inputStatus">Status</label>
+              <select id="inputStatus">
+                <option value="aprovado">Aprovado</option>
+                <option value="analise">Em análise</option>
+                <option value="banido">Banido</option>
+                <option value="congelado">Site congelado</option>
+              </select>
+              <div class="hint">Dica: use “Observações” para registrar contexto (ex.: domínio, motivo, etapa, etc.).</div>
+            </div>
+            <div>
+              <label for="inputObs">Observações</label>
+              <textarea id="inputObs" placeholder="Opcional. Ex: banido após uso, domínio .shop, congelado, etc."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div class="toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- LOGIN MODAL -->
+  <div class="overlay active" id="loginOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+      <div class="modal-header">
+        <div class="modal-title" id="loginTitle">Acesso</div>
+        <button class="btn ghost" id="btnFecharLogin" title="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="login-head">
+          <div class="login-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M7 10V8a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M6.5 10h11A2.5 2.5 0 0 1 20 12.5v5A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-5A2.5 2.5 0 0 1 6.5 10Z" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M12 14.2v2.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="login-title">Painel BM</div>
+            <div class="login-sub">GBR / 3P • acesso restrito por perfil • use em ambiente interno</div>
+          </div>
+        </div>
+
+        <div>
+          <label>Tipo de acesso</label>
+          <div class="role-tabs" id="roleTabs">
+            <button type="button" class="tab active" data-role="viewer">Visualização</button>
+            <button type="button" class="tab" data-role="admin">Admin</button>
+          </div>
+
+          <!-- Mantido por compatibilidade (valor usado no login) -->
+          <select id="roleSelect" class="sr-only" aria-hidden="true" tabindex="-1">
+            <option value="viewer">Visualizador (somente leitura)</option>
+            <option value="admin">Admin (editar / excluir)</option>
+          </select>
+
+          <div class="hint" style="margin-top:8px;font-weight:650">
+            Visualização: filtros, busca e exportação • Admin: salvar, editar e excluir.
+          </div>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div>
+          <label for="passwordInput">Senha</label>
+          <input type="password" id="passwordInput" placeholder="Digite a senha…" />
+          <div class="hint" style="margin-top:8px">
+            Dica: para evitar bloqueios do navegador, publique (Vercel/GitHub Pages) ou rode via Live Server.
+          </div>
+        </div>
+
+        <div class="trust">
+          <h3>Confiabilidade</h3>
+          <ul>
+            <li>Indicador de status (Online/Offline) e última sincronização com a API.</li>
+            <li>Cache local como contingência para leitura quando a API estiver instável.</li>
+            <li>Ações administrativas exigem senha de Admin (salvar/editar/excluir).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn primary" id="btnEntrar">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- CONFIRM MODAL -->
+  <div class="overlay" id="confirmOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="modal-header">
+        <div class="modal-title" id="confirmTitle">Confirmar ação</div>
+        <button class="btn ghost" id="btnFecharConfirm" title="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="confirmText" style="font-weight:800;margin-bottom:10px;">—</div>
+        <label for="confirmPassword">Senha (Admin)</label>
+        <input type="password" id="confirmPassword" placeholder="Digite a senha de admin…" />
+        <div class="hint" id="confirmHint">Esta ação exige acesso Admin.</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="btnCancelConfirm">Cancelar</button>
+        <button class="btn danger" id="btnOkConfirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT MODAL -->
+  <div class="overlay" id="editOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+      <div class="modal-header">
+        <div class="modal-title" id="editTitle">Editar registro</div>
+        <button class="btn ghost" id="btnFecharEdit" title="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="filters layout-2small">
+          <div>
+            <label for="editDate">Data</label>
+            <input type="date" id="editDate" />
+          </div>
+          <div>
+            <label for="editEmpresa">Empresa</label>
+            <select id="editEmpresa"></select>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="filters layout-2">
+          <div>
+            <label for="editFacebook">Facebook / Nome</label>
+            <input type="text" id="editFacebook" />
+          </div>
+          <div>
+            <label for="editPortfolio">BM / Portfólio</label>
+            <input type="text" id="editPortfolio" />
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="filters layout-2label">
+          <div>
+            <label for="editStatus">Status</label>
+            <select id="editStatus">
+              <option value="aprovado">Aprovado</option>
+              <option value="analise">Em análise</option>
+              <option value="banido">Banido</option>
+              <option value="congelado">Site congelado</option>
+            </select>
+          </div>
+          <div>
+            <label for="editObs">Observações</label>
+            <textarea id="editObs"></textarea>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <label for="editPassword">Senha (Admin)</label>
+        <input type="password" id="editPassword" placeholder="Digite a senha de admin para salvar a alteração…" />
+        <div class="hint">A edição só é salva com senha Admin.</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="btnCancelarEdit">Cancelar</button>
+        <button class="btn primary" id="btnSalvarEdit">Salvar alterações</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*******************************
+     * CONFIG (troque senhas aqui)
+     *******************************/
+    const CONFIG = {
+      EMPRESAS: ["GBR", "3P"],
+      STORAGE_KEY: "bm-painel-gbr-3p-v3",
+      ITEMS_PER_PAGE: 50,
+
+      // Senhas de acesso
+      ADMIN_PASSWORD: "ADMIN_123",
+      VIEWER_PASSWORD: "VIEW_123",
+
+      // Endpoints (mantidos do seu projeto atual)
+      API: {
+        get: "https://webhook.sistemavieira.com.br/webhook/get-bms",
+        save: "https://webhook.sistemavieira.com.br/webhook/save-bms",
+        alter: "https://webhook.sistemavieira.com.br/webhook/alter-bms",
+        del: "https://webhook.sistemavieira.com.br/webhook/delete-bms"
+      }
+    };
+
+    /*******************************
+     * STATE
+     *******************************/
+    let bmRegistros = [];
+    let currentPage = 1;
+    let currentRole = null; // null | viewer | admin
+    let editingId = null;
+
+    const els = {};
+    function q(id) { return document.getElementById(id); }
+
+    function setSync(status, text) {
+      const dot = els.syncDot;
+      const pill = els.syncPill;
+      dot.classList.remove("good","bad");
+      if (status === "good") dot.classList.add("good");
+      if (status === "bad") dot.classList.add("bad");
+      els.syncText.textContent = text;
+    }
+
+
+    function showToast(title, msg, type = "good", ttl = 4200) {
+      const wrap = els.toastWrap;
+      if (!wrap) { try { alert((title ? title + "\n" : "") + (msg || "")); } catch(_) {} ; return; }
+      const t = document.createElement("div");
+      t.className = "toast " + (type || "good");
+      const ic = (type === "good") ? "✓" : (type === "warn" ? "!" : "×");
+      t.innerHTML = `
+        <div class="t-ic">${ic}</div>
+        <div>
+          <div class="t-title">${escapeHtml(title || "")}</div>
+          ${msg ? `<div class="t-msg">${escapeHtml(msg)}</div>` : ""}
+        </div>
+        <button class="t-close" aria-label="Fechar">✕</button>
+      `;
+      wrap.appendChild(t);
+
+      const close = () => {
+        if (!t.isConnected) return;
+        t.style.opacity = "0";
+        t.style.transform = "translateY(6px)";
+        setTimeout(() => t.remove(), 180);
+      };
+
+      t.querySelector(".t-close").addEventListener("click", close);
+      setTimeout(close, ttl);
+    }
+
+
+    function nowBR() {
+      const d = new Date();
+      return d.toLocaleString("pt-BR");
+    }
+
+    function safeLower(v) {
+      return String(v || "").toLowerCase();
+    }
+
+
+    function norm(v) {
+      return safeLower(v).trim();
+    }
+
+    function normalizeArray(resp) {
+      // aceita: [] | {data: []} | {items: []} | string JSON
+      let data = resp;
+      if (typeof data === "string") {
+        try { data = JSON.parse(data); } catch (_) { return []; }
+      }
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.data)) return data.data;
+      if (data && Array.isArray(data.items)) return data.items;
+      return [];
+    }
+
+    function onlyAllowedCompanies(list) {
+      return (list || []).filter(r => CONFIG.EMPRESAS.includes(String(r.empresa || "").toUpperCase()))
+        .map((r, i) => {
+          const empresa = String(r.empresa || "").toUpperCase();
+          return {
+            id: r.id || r._id || r.uuid || ("temp-" + i + "-" + Date.now()),
+            data: r.data || "",
+            empresa,
+            facebook: r.facebook || "",
+            portifolio: r.portifolio || r.portfolio || "",
+            status: r.status || "analise",
+            obs: r.obs || ""
+          };
+        });
+    }
+
+
+    function dedupeRecords(list) {
+      const arr = (list || []).slice();
+      const best = new Map();
+
+      function score(r) {
+        let s = 0;
+        if (norm(r.facebook)) s += 3;
+        if (norm(r.portifolio)) s += 3;
+        if (norm(r.obs)) s += 1;
+        const st = String(r.status || "").toLowerCase();
+        if (st && st !== "analise") s += 1;
+        if (r.data) s += 1;
+        return s;
+      }
+
+      for (const r of arr) {
+        const emp = String(r.empresa || "").toUpperCase();
+        const fb = norm(r.facebook);
+        const pf = norm(r.portifolio);
+
+        const key = fb ? `${emp}::fb::${fb}` : (pf ? `${emp}::pf::${pf}` : `id::${r.id}`);
+        if (!best.has(key)) {
+          best.set(key, r);
+          continue;
+        }
+        const cur = best.get(key);
+
+        // Prefer o mais completo e o mais recente (data ISO)
+        const curScore = score(cur);
+        const rScore = score(r);
+
+        if (rScore > curScore) {
+          best.set(key, r);
+          continue;
+        }
+        if (rScore === curScore) {
+          const d1 = String(cur.data || "");
+          const d2 = String(r.data || "");
+          if (d2 && d2.localeCompare(d1) > 0) best.set(key, r);
+        }
+      }
+      return Array.from(best.values());
+    }
+
+
+    function loadLocal() {
+      try {
+        const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
+        if (!raw) return;
+        const arr = JSON.parse(raw);
+        bmRegistros = dedupeRecords(onlyAllowedCompanies(arr));
+      } catch (_) {}
+    }
+
+    function saveLocal() {
+      try {
+        localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(bmRegistros));
+      } catch (_) {}
+    }
+
+    function fillCompanySelects() {
+      const opts = ['<option value="">Todas</option>'].concat(CONFIG.EMPRESAS.map(e => `<option value="${e}">${e}</option>`)).join("");
+      els.filterEmpresa.innerHTML = opts;
+
+      const opts2 = CONFIG.EMPRESAS.map(e => `<option value="${e}">${e}</option>`).join("");
+      els.inputEmpresa.innerHTML = opts2;
+      els.editEmpresa.innerHTML = opts2;
+    }
+
+    function statusBadge(status) {
+      const s = String(status || "").toLowerCase();
+      if (s === "aprovado") return `<span class="badge b-good">Aprovado</span>`;
+      if (s === "analise") return `<span class="badge b-warn">Em análise</span>`;
+      if (s === "banido") return `<span class="badge b-bad">Banido</span>`;
+      if (s === "congelado") return `<span class="badge b-bad">Site congelado</span>`;
+      return `<span class="badge b-neutral">${status || "-"}</span>`;
+    }
+
+    function applyFilters(data) {
+      const fDate = els.filterDate.value;
+      const fEmp = els.filterEmpresa.value;
+      const fStatus = els.filterStatus.value;
+      const qtext = safeLower(els.searchInput.value).trim();
+
+      return (data || []).filter(r => {
+        if (fDate && r.data !== fDate) return false;
+        if (fEmp && String(r.empresa).toUpperCase() !== String(fEmp).toUpperCase()) return false;
+        if (fStatus && String(r.status).toLowerCase() !== String(fStatus).toLowerCase()) return false;
+        if (qtext) {
+          const hay = safeLower(r.facebook) + " " + safeLower(r.portifolio) + " " + safeLower(r.obs);
+          if (!hay.includes(qtext)) return false;
+        }
+        return true;
+      });
+    }
+
+    function sortData(data) {
+      // mais recente primeiro (data), e depois empresa
+      return (data || []).slice().sort((a,b) => {
+        const da = a.data || "";
+        const db = b.data || "";
+        if (da !== db) return db.localeCompare(da);
+        return String(a.empresa).localeCompare(String(b.empresa));
+      });
+    }
+
+    function updateSummary(filtered) {
+      const total = filtered.length;
+      let aprovado = 0, analise = 0, risco = 0;
+      for (const r of filtered) {
+        const s = String(r.status || "").toLowerCase();
+        if (s === "aprovado") aprovado++;
+        else if (s === "analise") analise++;
+        else if (s === "banido" || s === "congelado") risco++;
+      }
+      els.mTotal.textContent = total;
+      els.mAprovado.textContent = aprovado;
+      els.mAnalise.textContent = analise;
+      els.mRisco.textContent = risco;
+    }
+
+    function renderTable() {
+      const filtered = sortData(applyFilters(bmRegistros));
+      updateSummary(filtered);
+
+      const total = filtered.length;
+      const perPage = CONFIG.ITEMS_PER_PAGE;
+      const pages = Math.max(1, Math.ceil(total / perPage));
+      currentPage = Math.min(currentPage, pages);
+
+      const start = (currentPage - 1) * perPage;
+      const pageItems = filtered.slice(start, start + perPage);
+
+      els.pageInfo.textContent = `Página ${currentPage} de ${pages}`;
+      els.countInfo.textContent = `${total} registro(s)`;
+
+      const rows = pageItems.map(r => {
+        const acoes = (currentRole === "admin")
+          ? `<div class="actions">
+               <button class="iconbtn" data-action="edit" data-id="${r.id}">Editar</button>
+               <button class="iconbtn" data-action="del" data-id="${r.id}">Excluir</button>
+             </div>`
+          : `<span class="hint">—</span>`;
+        return `<tr>
+          <td>${r.data || "-"}</td>
+          <td><span class="badge b-neutral">${r.empresa}</span></td>
+          <td>${escapeHtml(r.facebook || "-")}</td>
+          <td>${escapeHtml(r.portifolio || "-")}</td>
+          <td>${statusBadge(r.status)}</td>
+          <td>${escapeHtml(r.obs || "")}</td>
+          <td>${acoes}</td>
+        </tr>`;
+      }).join("");
+
+      els.tableBody.innerHTML = rows || `<tr><td colspan="7" style="color:var(--muted);font-weight:700;">Nenhum registro encontrado.</td></tr>`;
+
+      // esconder coluna Ações em modo viewer
+      els.thAcoes.classList.toggle("hidden", currentRole !== "admin");
+
+      // listeners dos botões
+      if (currentRole === "admin") {
+        els.tableBody.querySelectorAll("button[data-action='edit']").forEach(btn => {
+          btn.addEventListener("click", () => openEdit(btn.getAttribute("data-id")));
+        });
+        els.tableBody.querySelectorAll("button[data-action='del']").forEach(btn => {
+          btn.addEventListener("click", () => confirmDelete(btn.getAttribute("data-id")));
+        });
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    /*******************************
+     * API
+     *******************************/
+    async function apiGet() {
+      setSync("warn", "Sincronização: carregando…");
+      try {
+        const r = await fetch(CONFIG.API.get, { method: "GET" });
+        const txt = await r.text();
+        const arr = dedupeRecords(onlyAllowedCompanies(normalizeArray(txt)));
+        if (arr.length) {
+          bmRegistros = arr;
+          saveLocal();
+          renderTable();
+        }
+        setSync("good", "Sincronização: online");
+        els.lastSync.textContent = "Última atualização: " + nowBR();
+      } catch (e) {
+        console.error(e);
+        setSync("bad", "Sincronização: offline (local)");
+        els.lastSync.textContent = "Última atualização: local (" + nowBR() + ")";
+      }
+    }
+
+    async function apiSave(record) {
+      try {
+        await fetch(CONFIG.API.save, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            data: record.data,
+            empresa: record.empresa,
+            facebook: record.facebook,
+            portifolio: record.portifolio,
+            status: record.status,
+            obs: record.obs
+          })
+        });
+      } catch (e) {
+        console.warn("Falha ao salvar na API, mantendo local.", e);
+      }
+      await apiGet();
+    }
+
+    async function apiAlter(record) {
+      try {
+        await fetch(CONFIG.API.alter, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: record.id,
+            data: record.data,
+            empresa: record.empresa,
+            facebook: record.facebook,
+            portifolio: record.portifolio,
+            status: record.status,
+            obs: record.obs
+          })
+        });
+      } catch (e) {
+        console.warn("Falha ao alterar na API, mantendo local.", e);
+      }
+      await apiGet();
+    }
+
+    async function apiDelete(record) {
+      const payload = { id: record.id, empresa: record.empresa };
+      let ok = false;
+      try {
+        const r = await fetch(CONFIG.API.del, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        ok = r.ok;
+      } catch (_) {}
+
+      // fallback: alguns webhooks não aceitam DELETE no browser
+      if (!ok) {
+        try {
+          const r2 = await fetch(CONFIG.API.del, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          ok = r2.ok;
+        } catch (_) {}
+      }
+
+      await apiGet();
+      return ok;
+    }
+
+    /*******************************
+     * ADMIN ACTIONS
+     *******************************/
+    function ensureAdminOrLogin() {
+      if (currentRole !== "admin") {
+        alert("Você está como Visualizador. Troque para Admin para editar.");
+        openLogin();
+        return false;
+      }
+      return true;
+    }
+
+    function formClear() {
+      els.inputFacebook.value = "";
+      els.inputPortfolio.value = "";
+      els.inputObs.value = "";
+      els.inputStatus.value = "analise";
+      // data fica (para facilitar)
+    }
+
+    function makeKey(r) {
+      return String(r.empresa).toUpperCase() + "::" + safeLower(r.facebook) + "::" + safeLower(r.portifolio);
+    }
+
+
+    function findExistingIndex(empresa, facebook, portifolio) {
+      const emp = String(empresa || "").toUpperCase();
+      const fb = norm(facebook);
+      const pf = norm(portifolio);
+
+      if (fb) {
+        const i = bmRegistros.findIndex(r =>
+          String(r.empresa || "").toUpperCase() === emp &&
+          norm(r.facebook) === fb
+        );
+        if (i !== -1) return { index: i, match: "facebook" };
+      }
+
+      if (pf) {
+        const i = bmRegistros.findIndex(r =>
+          String(r.empresa || "").toUpperCase() === emp &&
+          norm(r.portifolio) === pf
+        );
+        if (i !== -1) return { index: i, match: "portifolio" };
+      }
+
+      return { index: -1, match: null };
+    }
+
+
+    async function handleSave() {
+      if (!ensureAdminOrLogin()) return;
+
+      const data = els.inputDate.value;
+      const empresa = String(els.inputEmpresa.value || "").toUpperCase();
+      const facebook = els.inputFacebook.value.trim();
+      const portifolio = els.inputPortfolio.value.trim();
+      const status = els.inputStatus.value;
+      const obs = els.inputObs.value.trim();
+
+      if (!data || !empresa || (!facebook && !portifolio)) {
+        showToast("Campos obrigatórios", "Preencha Data, Empresa e Facebook/Nome ou Portfólio.", "warn");
+        return;
+      }
+
+      const found = findExistingIndex(empresa, facebook, portifolio);
+
+      if (found.index !== -1) {
+        const existing = bmRegistros[found.index];
+        const updatedRec = { ...existing, data, empresa, facebook, portifolio, status, obs };
+
+        // move para o topo (mais recente)
+        bmRegistros.splice(found.index, 1);
+        bmRegistros.unshift(updatedRec);
+
+        bmRegistros = onlyAllowedCompanies(bmRegistros);
+        bmRegistros = dedupeRecords(bmRegistros);
+        saveLocal();
+        renderTable();
+        formClear();
+
+        showToast("Registro atualizado", `Atualizado por ${found.match === "facebook" ? "Facebook/Nome" : "Portfólio"}.`, "good");
+        await apiAlter(updatedRec);
+      } else {
+        const newRec = {
+          id: String(Date.now()) + Math.random().toString(16).slice(2),
+          data, empresa, facebook, portifolio, status, obs
+        };
+
+        bmRegistros.unshift(newRec);
+
+        bmRegistros = onlyAllowedCompanies(bmRegistros);
+        bmRegistros = dedupeRecords(bmRegistros);
+        saveLocal();
+        renderTable();
+        formClear();
+
+        showToast("Registro criado", "Novo registro adicionado.", "good");
+        await apiSave(newRec);
+      }
+    }
+
+    function openEdit(id) {
+      if (!ensureAdminOrLogin()) return;
+      const r = bmRegistros.find(x => x.id == id);
+      if (!r) return;
+
+      editingId = r.id;
+      els.editDate.value = r.data || "";
+      els.editEmpresa.value = r.empresa || "GBR";
+      els.editFacebook.value = r.facebook || "";
+      els.editPortfolio.value = r.portifolio || "";
+      els.editStatus.value = r.status || "analise";
+      els.editObs.value = r.obs || "";
+      els.editPassword.value = "";
+
+      els.editOverlay.classList.add("active");
+      setTimeout(() => els.editPassword.focus(), 30);
+    }
+
+    async function saveEdit() {
+      if (!ensureAdminOrLogin()) return;
+      if (els.editPassword.value !== CONFIG.ADMIN_PASSWORD) {
+        alert("Senha de Admin incorreta.");
+        return;
+      }
+
+      const r = bmRegistros.find(x => x.id == editingId);
+      if (!r) return;
+
+      const updated = {
+        ...r,
+        data: els.editDate.value,
+        empresa: String(els.editEmpresa.value || "").toUpperCase(),
+        facebook: els.editFacebook.value.trim(),
+        portifolio: els.editPortfolio.value.trim(),
+        status: els.editStatus.value,
+        obs: els.editObs.value.trim()
+      };
+
+      if (!updated.data || !updated.empresa || (!updated.facebook && !updated.portifolio)) {
+        alert("Preencha pelo menos: Data, Empresa e Facebook/Nome ou Portfólio.");
+        return;
+      }
+
+      bmRegistros = bmRegistros.map(x => x.id == updated.id ? updated : x);
+      bmRegistros = onlyAllowedCompanies(bmRegistros);
+      saveLocal();
+      renderTable();
+      closeEdit();
+
+      await apiAlter(updated);
+    }
+
+    function closeEdit() {
+      editingId = null;
+      els.editOverlay.classList.remove("active");
+    }
+
+    function confirmDelete(id) {
+      if (!ensureAdminOrLogin()) return;
+      const r = bmRegistros.find(x => x.id == id);
+      if (!r) return;
+
+      els.confirmText.textContent = `Excluir: ${r.empresa} • ${r.facebook || "-"} • ${r.portifolio || "-"} ?`;
+      els.confirmPassword.value = "";
+      els.confirmOverlay.classList.add("active");
+
+      els.btnOkConfirm.onclick = async () => {
+        if (els.confirmPassword.value !== CONFIG.ADMIN_PASSWORD) {
+          alert("Senha de Admin incorreta.");
+          return;
+        }
+        els.confirmOverlay.classList.remove("active");
+
+        // remove local rápido (sensação de velocidade)
+        bmRegistros = bmRegistros.filter(x => x.id != id);
+        saveLocal();
+        renderTable();
+
+        const ok = await apiDelete(r);
+        if (!ok) {
+          alert("Não consegui confirmar o DELETE no webhook. Recarreguei os dados. Se continuar, o webhook pode estar bloqueando DELETE (use o fallback POST).");
+        }
+      };
+    }
+
+    /*******************************
+     * EXPORT
+     *******************************/
+    function exportCSV() {
+      const filtered = sortData(applyFilters(bmRegistros));
+      const header = ["data","empresa","facebook","portifolio","status","obs"];
+      const rows = filtered.map(r => header.map(k => {
+        const v = (r[k] ?? "");
+        return `"${String(v).replaceAll('"','""')}"`;
+      }).join(","));
+      const csv = [header.join(","), ...rows].join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `painel_bm_gbr_3p_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    /*******************************
+     * LOGIN
+     *******************************/
+    function applyRoleUI() {
+      const isAdmin = currentRole === "admin";
+      els.adminCard.classList.toggle("hidden", !isAdmin);
+      els.thAcoes.classList.toggle("hidden", !isAdmin);
+
+      // indicador de acesso (confiança)
+      const label = isAdmin ? "Admin" : (currentRole === "viewer" ? "Visualização" : "—");
+      els.roleText.textContent = `Acesso: ${label}`;
+      els.roleDot.className = "dot " + (isAdmin ? "warn" : (currentRole === "viewer" ? "good" : ""));
+
+      renderTable();
+    }
+
+    
+    function setRole(role) {
+      els.roleSelect.value = role;
+      document.querySelectorAll("#roleTabs .tab").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.role === role);
+      });
+    }
+
+    function openLogin() {
+      els.passwordInput.value = "";
+      setRole(currentRole || "viewer");
+      // fecha só se já existir sessão (ao trocar acesso)
+      els.btnFecharLogin.classList.toggle("hidden", !currentRole);
+      els.loginOverlay.classList.add("active");
+      setTimeout(() => els.passwordInput.focus(), 30);
+    }
+
+    function closeLogin() {
+      els.loginOverlay.classList.remove("active");
+    }
+
+    function doLogin(role, pwd) {
+      const want = role === "admin" ? CONFIG.ADMIN_PASSWORD : CONFIG.VIEWER_PASSWORD;
+      if (pwd !== want) {
+        alert("Senha incorreta.");
+        return false;
+      }
+      currentRole = role;
+      sessionStorage.setItem("bm_role", currentRole);
+      applyRoleUI();
+      closeLogin();
+      return true;
+    }
+
+    /*******************************
+     * INIT
+     *******************************/
+    function initEls() {
+      [
+        "syncPill","syncDot","syncText","lastSync","rolePill","roleDot","roleText",
+        "filterDate","filterEmpresa","filterStatus","searchInput",
+        "prevPage","nextPage","pageInfo","countInfo","tableBody","thAcoes",
+        "mTotal","mAprovado","mAnalise","mRisco",
+        "btnClearFilters","btnRecarregar","btnExport","btnTrocarAcesso",
+        "adminCard","btnSalvar","btnLimparForm","inputDate","inputEmpresa","inputFacebook","inputPortfolio","inputStatus","inputObs",
+        "loginOverlay","btnFecharLogin","roleSelect","passwordInput","btnEntrar",
+        "confirmOverlay","btnFecharConfirm","btnCancelConfirm","btnOkConfirm","confirmText","confirmPassword",
+        "editOverlay","btnFecharEdit","btnCancelarEdit","btnSalvarEdit","editDate","editEmpresa","editFacebook","editPortfolio","editStatus","editObs","editPassword"
+      ].forEach(id => els[id] = q(id));
+
+      // alias
+      els.syncPill = q("syncPill");
+      els.syncDot = q("syncDot");
+      els.syncText = q("syncText");
+    }
+
+    function wireEvents() {
+      els.filterDate.addEventListener("change", () => { currentPage=1; renderTable(); });
+      els.filterEmpresa.addEventListener("change", () => { currentPage=1; renderTable(); });
+      els.filterStatus.addEventListener("change", () => { currentPage=1; renderTable(); });
+      els.searchInput.addEventListener("input", () => { currentPage=1; renderTable(); });
+
+      els.prevPage.addEventListener("click", () => { currentPage=Math.max(1, currentPage-1); renderTable(); });
+      els.nextPage.addEventListener("click", () => {
+        const total = applyFilters(bmRegistros).length;
+        const pages = Math.max(1, Math.ceil(total / CONFIG.ITEMS_PER_PAGE));
+        currentPage=Math.min(pages, currentPage+1);
+        renderTable();
+      });
+
+      els.btnClearFilters.addEventListener("click", () => {
+        els.filterDate.value = "";
+        els.filterEmpresa.value = "";
+        els.filterStatus.value = "";
+        els.searchInput.value = "";
+        currentPage = 1;
+        renderTable();
+      });
+
+      els.btnRecarregar.addEventListener("click", () => apiGet());
+      els.btnExport.addEventListener("click", () => exportCSV());
+
+      els.btnTrocarAcesso.addEventListener("click", () => openLogin());
+
+      // Admin
+      els.btnSalvar.addEventListener("click", (e) => { e.preventDefault(); handleSave(); });
+      els.btnLimparForm.addEventListener("click", (e) => { e.preventDefault(); formClear(); });
+
+      // Login modal
+      els.btnFecharLogin.addEventListener("click", () => { if (currentRole) els.loginOverlay.classList.remove("active"); });
+      els.btnEntrar.addEventListener("click", () => doLogin(els.roleSelect.value, els.passwordInput.value));
+      els.passwordInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") doLogin(els.roleSelect.value, els.passwordInput.value);
+      });
+
+      // Role tabs (login)
+      document.querySelectorAll("#roleTabs .tab").forEach(btn => {
+        btn.addEventListener("click", () => setRole(btn.dataset.role));
+      });
+
+      // Confirm modal
+      els.btnFecharConfirm.addEventListener("click", () => els.confirmOverlay.classList.remove("active"));
+      els.btnCancelConfirm.addEventListener("click", () => els.confirmOverlay.classList.remove("active"));
+      els.confirmOverlay.addEventListener("click", (e) => {
+        if (e.target === els.confirmOverlay) els.confirmOverlay.classList.remove("active");
+      });
+
+      // Edit modal
+      els.btnFecharEdit.addEventListener("click", closeEdit);
+      els.btnCancelarEdit.addEventListener("click", closeEdit);
+      els.btnSalvarEdit.addEventListener("click", (e) => { e.preventDefault(); saveEdit(); });
+      els.editOverlay.addEventListener("click", (e) => {
+        if (e.target === els.editOverlay) closeEdit();
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      initEls();
+      fillCompanySelects();
+
+      // data default: hoje
+      const today = new Date().toISOString().slice(0,10);
+      els.inputDate.value = today;
+
+      loadLocal();
+      renderTable();
+
+      wireEvents();
+
+      // role remembered
+      const savedRole = sessionStorage.getItem("bm_role");
+      if (savedRole === "admin" || savedRole === "viewer") currentRole = savedRole;
+      applyRoleUI();
+
+      // abre login sempre ao iniciar (pra escolher)
+      openLogin();
+
+      // tenta sincronizar logo no início
+      await apiGet();
+    });
+  </script>
+
 </body>
-
 </html>
